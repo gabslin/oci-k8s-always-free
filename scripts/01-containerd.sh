@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-dnf install -y dnf-plugins-core
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/lib-packages.sh"
 
-if [[ ! -f /etc/yum.repos.d/docker-ce.repo ]]; then
-  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-fi
+dnf_retry install -y dnf-plugins-core
 
-dnf makecache
-dnf install -y containerd.io
+rm -f /etc/yum.repos.d/docker-ce.repo
+dnf config-manager --add-repo https://download.docker.com/linux/oracle/docker-ce.repo
+
+rpm_import_retry https://download.docker.com/linux/oracle/gpg
+dnf_retry makecache
+dnf_retry install -y containerd.io
 
 mkdir -p /etc/containerd
 containerd config default >/etc/containerd/config.toml

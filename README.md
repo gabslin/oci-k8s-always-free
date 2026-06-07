@@ -118,40 +118,31 @@ Ao final do `apply`, o bootstrap local acessa as instancias via SSH, instala con
 
 ## Acessos
 
-Os outputs mostram:
-
-- IPs publicos e privados dos nodes
-- comandos SSH
-- endpoint temporario do ArgoCD
-- comando para copiar o kubeconfig
-
-Exemplo:
+O Terraform gera um resumo unico com os principais acessos:
 
 ```bash
-terraform output ssh_commands
-terraform output argocd_temporary_endpoint
-terraform output kubectl_config_command
+terraform output -raw cluster_access
 ```
+
+Esse resumo mostra:
+
+- comandos SSH para `kube`, `kube02`, `kube03` e `kube04`;
+- URL temporaria do ArgoCD;
+- comando para buscar a senha inicial do ArgoCD;
+- comando para copiar o kubeconfig;
+- IPs publicos e privados dos nodes;
+- CIDR liberado nas regras de acesso.
 
 Para acessar o ArgoCD:
 
-```text
-https://<IP_PUBLICO_KUBE>:30868
+```bash
+terraform output -raw cluster_access
 ```
 
 Usuario inicial:
 
 ```text
 admin
-```
-
-Senha inicial:
-
-```bash
-ssh -i ~/.ssh/kube.key opc@<IP_PUBLICO_KUBE>
-kubectl get secret argocd-initial-admin-secret \
-  -n argocd \
-  -o jsonpath="{.data.password}" | base64 -d; echo
 ```
 
 ## Observacoes

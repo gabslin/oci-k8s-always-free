@@ -34,6 +34,12 @@ Flags obrigatorias:
   --region
   --compartment-ocid
 
+Exemplo minimo:
+  scripts/create-cluster.sh --region sa-vinhedo-1 --compartment-ocid ocid1.compartment.oc1..xxx --auto-approve
+
+  Esse exemplo usa ~/.oci/config para autenticar na OCI e gera automaticamente
+  ~/.ssh/kube.key e ~/.ssh/kube.key.pub, caso elas ainda nao existam.
+
 Credenciais OCI:
   Passe --tenancy-ocid, --user-ocid, --fingerprint e --oci-private-key-path,
   ou deixe essas flags vazias se o provider OCI ja estiver configurado em ~/.oci/config.
@@ -163,14 +169,7 @@ if [[ -z "${SSH_PUBLIC_KEY_FILE}" ]]; then
   SSH_PUBLIC_KEY_FILE="${SSH_PRIVATE_KEY_PATH}.pub"
 fi
 
-if [[ ! -r "${SSH_PUBLIC_KEY_FILE}" || ! -r "${SSH_PRIVATE_KEY_PATH}" ]]; then
-  if [[ -e "${SSH_PRIVATE_KEY_PATH}" || -e "${SSH_PUBLIC_KEY_FILE}" ]]; then
-    echo "Par de chaves SSH incompleto ou sem permissao de leitura:" >&2
-    echo "  privada: ${SSH_PRIVATE_KEY_PATH}" >&2
-    echo "  publica: ${SSH_PUBLIC_KEY_FILE}" >&2
-    exit 1
-  fi
-
+if [[ ! -e "${SSH_PRIVATE_KEY_PATH}" && ! -e "${SSH_PUBLIC_KEY_FILE}" ]]; then
   if ! command -v ssh-keygen >/dev/null 2>&1; then
     echo "ssh-keygen nao encontrado no PATH. Instale o OpenSSH ou passe uma chave com --ssh-public-key-file." >&2
     exit 1
@@ -182,6 +181,25 @@ if [[ ! -r "${SSH_PUBLIC_KEY_FILE}" || ! -r "${SSH_PRIVATE_KEY_PATH}" ]]; then
   chmod 700 "$(dirname "${SSH_PRIVATE_KEY_PATH}")"
   chmod 600 "${SSH_PRIVATE_KEY_PATH}"
   chmod 644 "${SSH_PUBLIC_KEY_FILE}"
+fi
+
+if [[ -r "${SSH_PRIVATE_KEY_PATH}" && ! -e "${SSH_PUBLIC_KEY_FILE}" ]]; then
+  if ! command -v ssh-keygen >/dev/null 2>&1; then
+    echo "ssh-keygen nao encontrado no PATH. Instale o OpenSSH ou passe uma chave com --ssh-public-key-file." >&2
+    exit 1
+  fi
+
+  echo "Gerando chave publica SSH em ${SSH_PUBLIC_KEY_FILE}..."
+  ssh-keygen -y -f "${SSH_PRIVATE_KEY_PATH}" >"${SSH_PUBLIC_KEY_FILE}"
+  chmod 644 "${SSH_PUBLIC_KEY_FILE}"
+fi
+
+if [[ ! -e "${SSH_PRIVATE_KEY_PATH}" && -e "${SSH_PUBLIC_KEY_FILE}" ]]; then
+  echo "Existe chave publica, mas a chave privada nao foi encontrada:" >&2
+  echo "  privada: ${SSH_PRIVATE_KEY_PATH}" >&2
+  echo "  publica: ${SSH_PUBLIC_KEY_FILE}" >&2
+  echo "Informe a chave privada correta com --ssh-private-key-path." >&2
+  exit 1
 fi
 
 if [[ ! -r "${SSH_PUBLIC_KEY_FILE}" ]]; then
@@ -270,19 +288,4 @@ else
 fi
 
 echo
-echo "Acessos SSH:"
-printf 'kube:   %s\n' "$(terraform output -raw ssh_kube)"
-printf 'kube02: %s\n' "$(terraform output -raw ssh_kube02)"
-printf 'kube03: %s\n' "$(terraform output -raw ssh_kube03)"
-printf 'kube04: %s\n' "$(terraform output -raw ssh_kube04)"
-
-echo
-echo "ArgoCD:"
-terraform output -raw argocd_temporary_endpoint
-echo
-echo "Senha inicial do ArgoCD:"
-terraform output -raw argocd_initial_password_command
-
-echo
-echo "Kubeconfig:"
-terraform output -raw kubectl_config_command
+terraform output -raw cluster_access

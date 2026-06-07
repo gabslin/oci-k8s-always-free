@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/lib-packages.sh"
+
 NODE_HOSTS="${1:-}"
 
 swapoff -a || true
@@ -24,7 +27,7 @@ sysctl --system
 
 systemctl disable --now firewalld || true
 
-dnf install -y iscsi-initiator-utils nfs-utils
+dnf_retry install -y iscsi-initiator-utils nfs-utils
 systemctl enable --now iscsid
 
 if [[ -n "${NODE_HOSTS}" ]]; then

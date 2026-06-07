@@ -37,7 +37,8 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.11.1/deploy/longhorn.yaml
 
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-kubectl apply -n argocd \
+# Server-side apply evita estourar o limite de annotations nas CRDs grandes do ArgoCD.
+kubectl apply --server-side --force-conflicts -n argocd \
   -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 kubectl patch svc argocd-server -n argocd \

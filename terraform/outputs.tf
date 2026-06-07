@@ -1,57 +1,32 @@
-output "allowed_source_cidr" {
-  description = "CIDR liberado nas regras de entrada."
-  value       = local.allowed_source_cidr
-}
+output "cluster_access" {
+  description = "Resumo com os acessos principais do cluster."
+  value       = <<EOT
 
-output "public_ips" {
-  description = "IPs publicos dos nodes."
-  value       = module.compute.public_ips
-}
+Cluster Kubernetes criado com sucesso.
 
-output "private_ips" {
-  description = "IPs privados dos nodes."
-  value       = module.compute.private_ips
-}
+SSH:
+  kube   -> ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]}
+  kube02 -> ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube02"]}
+  kube03 -> ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube03"]}
+  kube04 -> ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube04"]}
 
-output "ssh_commands" {
-  description = "Comandos SSH para acessar os nodes."
-  value = {
-    for name, ip in module.compute.public_ips :
-    name => "ssh -i ${var.ssh_private_key_path} opc@${ip}"
-  }
-}
+ArgoCD:
+  URL     -> https://${module.compute.public_ips["kube"]}:30868
+  Usuario -> admin
+  Senha   -> ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]} 'kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d; echo'
 
-output "ssh_kube" {
-  description = "Comando SSH para acessar o control-plane."
-  value       = "ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]}"
-}
+Kubeconfig:
+  scp -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]}:~/.kube/config ./kubeconfig-oci
+  export KUBECONFIG=./kubeconfig-oci
 
-output "ssh_kube02" {
-  description = "Comando SSH para acessar o worker kube02."
-  value       = "ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube02"]}"
-}
+IPs:
+  kube   -> publico ${module.compute.public_ips["kube"]} | privado ${module.compute.private_ips["kube"]}
+  kube02 -> publico ${module.compute.public_ips["kube02"]} | privado ${module.compute.private_ips["kube02"]}
+  kube03 -> publico ${module.compute.public_ips["kube03"]} | privado ${module.compute.private_ips["kube03"]}
+  kube04 -> publico ${module.compute.public_ips["kube04"]} | privado ${module.compute.private_ips["kube04"]}
 
-output "ssh_kube03" {
-  description = "Comando SSH para acessar o worker kube03."
-  value       = "ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube03"]}"
-}
+Rede liberada:
+  ${local.allowed_source_cidr}
 
-output "ssh_kube04" {
-  description = "Comando SSH para acessar o worker kube04."
-  value       = "ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube04"]}"
-}
-
-output "argocd_temporary_endpoint" {
-  description = "Endpoint temporario do ArgoCD via NodePort HTTPS no IP publico do control-plane."
-  value       = "https://${module.compute.public_ips["kube"]}:30868"
-}
-
-output "argocd_initial_password_command" {
-  description = "Comando para buscar a senha inicial do usuario admin do ArgoCD."
-  value       = "ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]} 'kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath=\"{.data.password}\" | base64 -d; echo'"
-}
-
-output "kubectl_config_command" {
-  description = "Comando para copiar o kubeconfig do control-plane para a maquina local."
-  value       = "scp -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]}:~/.kube/config ./kubeconfig-oci"
+EOT
 }

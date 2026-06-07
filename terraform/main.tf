@@ -95,6 +95,7 @@ resource "null_resource" "bootstrap_kubernetes" {
     control_hash     = filesha256("${path.module}/../scripts/03-control-plane.sh")
     worker_hash      = filesha256("${path.module}/../scripts/04-worker.sh")
     addons_hash      = filesha256("${path.module}/../scripts/05-addons.sh")
+    packages_hash    = filesha256("${path.module}/../scripts/lib-packages.sh")
   }
 
   provisioner "local-exec" {
