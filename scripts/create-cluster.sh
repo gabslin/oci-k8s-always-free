@@ -279,6 +279,9 @@ printf 'kube04: %s\n' "$(terraform output -raw ssh_kube04)"
 echo
 echo "ArgoCD:"
 terraform output -raw argocd_temporary_endpoint
+echo
+echo "Senha inicial do ArgoCD:"
+terraform output -raw argocd_initial_password_command
 
 echo
 echo "Kubeconfig:"

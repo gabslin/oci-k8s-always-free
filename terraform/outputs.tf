@@ -46,6 +46,11 @@ output "argocd_temporary_endpoint" {
   value       = "https://${module.compute.public_ips["kube"]}:30868"
 }
 
+output "argocd_initial_password_command" {
+  description = "Comando para buscar a senha inicial do usuario admin do ArgoCD."
+  value       = "ssh -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]} 'kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath=\"{.data.password}\" | base64 -d; echo'"
+}
+
 output "kubectl_config_command" {
   description = "Comando para copiar o kubeconfig do control-plane para a maquina local."
   value       = "scp -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]}:~/.kube/config ./kubeconfig-oci"
