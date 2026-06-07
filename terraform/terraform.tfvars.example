@@ -1,0 +1,33 @@
+region           = "sa-vinhedo-1"
+compartment_ocid = "ocid1.compartment.oc1..example"
+
+# Opcional se voce ja usa ~/.oci/config ou variaveis de ambiente do provider.
+tenancy_ocid         = "ocid1.tenancy.oc1..example"
+user_ocid            = "ocid1.user.oc1..example"
+fingerprint          = "aa:bb:cc:dd:ee:ff"
+oci_private_key_path = "~/.oci/oci_api_key.pem"
+
+# Use a mesma chave publica em todas as VMs.
+ssh_public_key       = "ssh-rsa AAAA... usuario@maquina"
+ssh_private_key_path = "~/.ssh/kube.key"
+
+# Se ficar null, o Terraform detecta seu IP publico atual e libera todo trafego somente dele.
+allowed_source_cidr = null
+
+# Padrao do laboratorio manual.
+vcn_cidr     = "10.0.0.0/24"
+subnet_cidr  = "10.0.0.0/24"
+metallb_pool = "10.0.0.240-10.0.0.250"
+
+shape                       = "VM.Standard.A1.Flex"
+control_plane_ocpus         = 1
+control_plane_memory_in_gbs = 6
+ocpus                       = 1
+memory_in_gbs               = 6
+
+node_private_ips = {
+  kube   = "10.0.0.39"
+  kube02 = "10.0.0.135"
+  kube03 = "10.0.0.74"
+  kube04 = "10.0.0.118"
+}

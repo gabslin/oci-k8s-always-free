@@ -1,0 +1,16 @@
+#cloud-config
+hostname: ${hostname}
+fqdn: ${hostname}
+manage_etc_hosts: false
+preserve_hostname: false
+package_update: false
+write_files:
+  - path: /etc/hosts
+    permissions: "0644"
+    content: |
+      127.0.0.1   localhost localhost.localdomain
+%{ for name, node in node_hosts ~}
+      ${node.private_ip}   ${name}
+%{ endfor ~}
+runcmd:
+  - hostnamectl set-hostname ${hostname}
