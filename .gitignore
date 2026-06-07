@@ -5,3 +5,5 @@
 !terraform/terraform.tfvars.example
 kubeconfig-oci
 *.key
+docs/contexto-k8s-oci.md
+AGENTS.md
