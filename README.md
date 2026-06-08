@@ -41,14 +41,7 @@ O provider OCI pode usar a configuracao padrao em `~/.oci/config` ou variaveis d
 O caminho mais simples e rodar o script principal a partir da raiz do projeto:
 
 ```bash
-scripts/create-cluster.sh \
-  --region sa-vinhedo-1 \
-  --compartment-ocid ocid1.compartment.oc1..example \
-  --tenancy-ocid ocid1.tenancy.oc1..example \
-  --user-ocid ocid1.user.oc1..example \
-  --fingerprint aa:bb:cc:dd:ee:ff \
-  --oci-private-key-path ~/.oci/oci_api_key.pem \
-  --auto-approve
+scripts/create-cluster.sh --region sa-vinhedo-1 --compartment-ocid ocid1.tenancy.oc1.. --auto-approve
 ```
 
 O script:
@@ -61,13 +54,15 @@ O script:
 - deixa o Terraform executar o bootstrap via SSH nas maquinas.
 - gera automaticamente `~/.ssh/kube.key` e `~/.ssh/kube.key.pub`, se voce nao informar uma chave SSH.
 
-Se voce ja tiver o provider OCI configurado em `~/.oci/config`, pode omitir:
+Esse comando considera que voce ja tem o provider OCI configurado em `~/.oci/config`.
+
+Se preferir passar as credenciais da OCI pelo comando, use tambem:
 
 ```text
---tenancy-ocid
---user-ocid
---fingerprint
---oci-private-key-path
+--tenancy-ocid ocid1.tenancy.oc1..example
+--user-ocid ocid1.user.oc1..example
+--fingerprint aa:bb:cc:dd:ee:ff
+--oci-private-key-path ~/.oci/oci_api_key.pem
 ```
 
 Se quiser usar uma chave SSH propria, adicione:
