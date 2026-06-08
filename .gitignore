@@ -4,6 +4,11 @@
 *.tfvars
 !terraform/terraform.tfvars.example
 kubeconfig-oci
+kubeconfig-*
+*.pem
 *.key
+*.tfplan
+crash.log
+crash.*.log
 docs/contexto-k8s-oci.md
 AGENTS.md
