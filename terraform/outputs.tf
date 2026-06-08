@@ -17,6 +17,7 @@ ArgoCD:
 
 Kubeconfig:
   scp -i ${var.ssh_private_key_path} opc@${module.compute.public_ips["kube"]}:~/.kube/config ./kubeconfig-oci
+  sed -i 's#https://${module.compute.private_ips["kube"]}:6443#https://${module.compute.public_ips["kube"]}:6443#' ./kubeconfig-oci
   export KUBECONFIG=./kubeconfig-oci
 
 IPs:

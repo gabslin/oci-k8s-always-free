@@ -79,7 +79,7 @@ done
 
 echo "Inicializando control-plane..."
 ssh "${SSH_OPTS[@]}" "opc@${CONTROL_PLANE_PUBLIC_IP}" \
-  "sudo /home/opc/k8s-bootstrap/scripts/03-control-plane.sh '${CONTROL_PLANE_PRIVATE_IP}'"
+  "sudo /home/opc/k8s-bootstrap/scripts/03-control-plane.sh '${CONTROL_PLANE_PRIVATE_IP}' '${CONTROL_PLANE_PUBLIC_IP}'"
 
 JOIN_COMMAND="$(ssh "${SSH_OPTS[@]}" "opc@${CONTROL_PLANE_PUBLIC_IP}" "sudo cat /root/kubeadm_join.sh")"
 JOIN_COMMAND_ESCAPED="$(printf '%q' "${JOIN_COMMAND}")"

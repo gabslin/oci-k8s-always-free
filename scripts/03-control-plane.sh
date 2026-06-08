@@ -2,10 +2,12 @@
 set -euo pipefail
 
 CONTROL_PLANE_PRIVATE_IP="${1:?IP privado do control-plane nao informado}"
+CONTROL_PLANE_PUBLIC_IP="${2:?IP publico do control-plane nao informado}"
 
 if [[ ! -f /etc/kubernetes/admin.conf ]]; then
   kubeadm init \
     --apiserver-advertise-address="${CONTROL_PLANE_PRIVATE_IP}" \
+    --apiserver-cert-extra-sans="${CONTROL_PLANE_PUBLIC_IP}" \
     --pod-network-cidr=10.244.0.0/16 \
     --ignore-preflight-errors=NumCPU
 fi

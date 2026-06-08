@@ -41,5 +41,5 @@ kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply --server-side --force-conflicts -n argocd \
   -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-kubectl patch svc argocd-server -n argocd \
-  -p '{"spec":{"type":"LoadBalancer"}}'
+kubectl patch svc argocd-server -n argocd --type merge \
+  -p '{"spec":{"type":"LoadBalancer","ports":[{"name":"http","port":80,"protocol":"TCP","targetPort":8080,"nodePort":31863},{"name":"https","port":443,"protocol":"TCP","targetPort":8080,"nodePort":30868}]}}'

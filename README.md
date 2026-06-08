@@ -13,7 +13,7 @@ Projeto para criar um cluster Kubernetes na Oracle Cloud Infrastructure usando T
 - 4 instancias Oracle Linux 9 ARM64:
   - `kube`: control-plane
   - `kube02`, `kube03`, `kube04`: workers
-- IPs privados fixos, seguindo o laboratorio manual
+- IPs privados fixos para facilitar acesso, automacao e documentacao
 - Bootstrap automatico do Kubernetes e addons
 
 ## Requisitos
@@ -32,7 +32,7 @@ Antes de aplicar, confira no painel da OCI:
 - se a regiao escolhida tem capacidade para `VM.Standard.A1.Flex`;
 - se a tenancy tem cota disponivel para Ampere A1;
 - se OCPUs e memoria configuradas cabem no limite Always Free;
-- se nenhum recurso extra pago sera criado manualmente fora deste projeto.
+- se nenhum recurso extra pago sera criado fora deste projeto.
 
 O provider OCI pode usar a configuracao padrao em `~/.oci/config` ou variaveis de ambiente, conforme a documentacao oficial do provider.
 
@@ -83,7 +83,7 @@ Para ver todas as opcoes:
 scripts/create-cluster.sh --help
 ```
 
-## Uso manual
+## Uso com Terraform direto
 
 Entre no diretorio Terraform:
 
@@ -148,7 +148,6 @@ admin
 ## Observacoes
 
 - Nao coloque chave privada, kubeconfig real, tokens ou OCIDs sensiveis no Git.
-- O bootstrap segue o runbook manual em `docs/runbook-manual.md`.
-- O control-plane usa `--ignore-preflight-errors=NumCPU` para funcionar com 1 OCPU, como no laboratorio manual.
+- O control-plane usa `--ignore-preflight-errors=NumCPU` para funcionar com 1 OCPU.
 - Se houver cota, prefira `control_plane_ocpus = 2`.
 - O MetalLB usa IPs privados da VCN; por isso o acesso externo inicial ao ArgoCD usa NodePort no IP publico do node `kube`.

@@ -1,6 +1,6 @@
-# Runbook manual do cluster Kubernetes OCI
+# Referência de bootstrap do cluster Kubernetes OCI
 
-Este documento resume os comandos executados manualmente para criação do cluster Kubernetes em Oracle Linux 9 ARM64 na OCI.
+Este documento resume os comandos usados pelos scripts de bootstrap para preparar o Oracle Linux 9 ARM64 e criar o cluster Kubernetes na OCI.
 
 ## 1. Configuração inicial de SSH
 
